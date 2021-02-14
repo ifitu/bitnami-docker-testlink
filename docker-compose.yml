@@ -1,30 +1,32 @@
-version: '2'
 services:
   mariadb:
-    image: 'docker.io/bitnami/mariadb:10.3-debian-10'
+    container_name: tl_db
+    image: 'docker.io/bitnami/mariadb:10.5'
+    restart: always
     environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-      - MARIADB_USER=bn_testlink
-      - MARIADB_DATABASE=bitnami_testlink
+      - MARIADB_USER=testlink
+      - MARIADB_DATABASE=testlink
+      - MARIADB_PASSWORD=${TL_DB_PASSWORD}
+      - MARIADB_CHARACTER_SET=utf8mb4
+      - MARIADB_COLLATE=utf8mb4_general_ci
+      - MARIADB_ROOT_PASSWORD=${TL_ROOT_PASSWORD}
     volumes:
-      - 'mariadb_data:/bitnami/mariadb'
-  testlink:
-    image: 'docker.io/bitnami/testlink:1-debian-10'
+      - '/srv/testlink/mariadb:/bitnami/mariadb'
+  web:
+    container_name: tl_web
+    image: 'docker.io/bitnami/testlink:latest'
+    restart: always
     ports:
-      - '80:8080'
-      - '443:8443'
+        - '127.0.0.1:48080:8080/tcp'
     environment:
-      - TESTLINK_DATABASE_HOST=mariadb
-      - TESTLINK_DATABASE_PORT_NUMBER=3306
-      - TESTLINK_DATABASE_USER=bn_testlink
-      - TESTLINK_DATABASE_NAME=bitnami_testlink
-      - ALLOW_EMPTY_PASSWORD=yes
+      - TESTLINK_USERNAME=testlink
+      - TESTLINK_PASSWORD=${TL_APP_PASSWD}
+      - TESTLINK_DATABASE_USER=testlink
+      - TESTLINK_DATABASE_NAME=testlink
+      - TESTLINK_DATABASE_PASSWORD=${TL_DB_PASSWORD}
     volumes:
-      - 'testlink_data:/bitnami/testlink'
+      - '/srv/testlink/tldata:/bitnami/testlink'
+      - '/srv/testlink/custom_config.inc.php:/opt/bitnami/testlink/custom_config.inc.php'
+      - '/srv/testlink/php.ini:/opt/bitnami/php/etc/php.ini'
     depends_on:
       - mariadb
-volumes:
-  mariadb_data:
-    driver: local
-  testlink_data:
-    driver: local
