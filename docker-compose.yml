@@ -21,6 +21,7 @@ services:
     environment:
       - TESTLINK_USERNAME=testlink
       - TESTLINK_PASSWORD=${TL_APP_PASSWD}
+      - TESTLINK_LANGUAGE=zh_CN
       - TESTLINK_DATABASE_USER=testlink
       - TESTLINK_DATABASE_NAME=testlink
       - TESTLINK_DATABASE_PASSWORD=${TL_DB_PASSWORD}
